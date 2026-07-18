@@ -3,7 +3,8 @@ name: Build Windows EXE
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build-windows:
@@ -20,7 +21,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
@@ -30,11 +30,16 @@ jobs:
         with:
           workspaces: ./src-tauri -> target
 
-      - name: Install JavaScript dependencies
-        run: npm ci
+      - name: Install JavaScript and Tauri dependencies
+        shell: pwsh
+        run: |
+          Remove-Item package-lock.json -ErrorAction SilentlyContinue
+          npm config set registry https://registry.npmjs.org/
+          npm install --include=dev --no-audit --no-fund
+          npx tauri --version
 
       - name: Build Windows installer and EXE
-        run: npm run tauri build
+        run: npx tauri build
 
       - name: Upload Windows installers
         uses: actions/upload-artifact@v4
