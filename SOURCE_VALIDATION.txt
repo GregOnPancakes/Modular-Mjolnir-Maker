@@ -1,0 +1,16 @@
+MJOLNIR MODULAR BUILDER — SOURCE VALIDATION
+
+Validated in the creation environment:
+- Vite production frontend build: PASSED
+- Five modular 3MF asset libraries present: PASSED
+- GitHub Actions workflow present: PASSED
+- Tauri v2 configuration present: PASSED
+- Windows icons present: PASSED
+- Source package contains no node_modules, dist or Rust target directory: PASSED
+
+Not possible in the current Linux container:
+- compiling the final Windows EXE locally;
+- opening the generated application on Windows;
+- checking the exported project visually in Bambu Studio.
+
+The included GitHub Actions workflow performs the genuine Windows build on windows-latest.
