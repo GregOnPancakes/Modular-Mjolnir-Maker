@@ -1,0 +1,13 @@
+MJOLNIR BUILDER V1.1 UPDATE
+
+This update fixes the blank preview and adds the three requested handle constructions.
+
+Easiest method:
+1. Extract this ZIP.
+2. In your GitHub repository, choose Add file > Upload files.
+3. Drag all files and folders from inside this extracted update folder onto GitHub.
+4. Commit directly to main.
+5. The Build Windows EXE action will start automatically.
+6. Download the new Mjolnir-Modular-Builder-Windows artifact when the run is green.
+
+The folder paths must remain exactly as supplied. Existing files with the same paths should be replaced.
