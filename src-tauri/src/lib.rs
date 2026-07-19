@@ -1,10 +1,11 @@
+use base64::engine::general_purpose::STANDARD;
+use base64::Engine;
 use quick_xml::events::Event;
 use quick_xml::Reader;
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::{Cursor, Read, Write};
+use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use tauri::{AppHandle, Manager};
 use thiserror::Error;
@@ -81,7 +82,7 @@ fn centered(mut v:Vec<[f32;3]>)->Vec<[f32;3]>{let (mut lo,mut hi)=([f32::MAX;3],
 fn assembled(mesh:&Mesh,role:&str,c:&Combination)->Vec<[f32;3]>{let mut v=centered(mesh.vertices.clone());match role{
     "handle"=>{for p in &mut v{p[2]-=c.length as f32;if c.handle_style=="real"{let s=(c.thickness as f32+5.)/c.thickness as f32;p[0]*=s;p[1]*=s;}}},
     "pommel"=>{let top=mesh.vertices.iter().map(|p|p[2]).fold(f32::MIN,f32::max);for p in &mut v{p[2]-=top+c.length as f32;}},
-    "strap"=>{let src=mesh.vertices.clone();let minx=src.iter().map(|p|p[0]).fold(f32::MAX,f32::min);let maxx=src.iter().map(|p|p[0]).fold(f32::MIN,f32::max);let maxy=src.iter().map(|p|p[1]).fold(f32::MIN,f32::max);let meanz=src.iter().map(|p|p[2]).sum::<f32>()/src.len() as f32;let attach=-(c.length as f32)-if c.lower_end=="pommel"{22.}else{0.};v=src.into_iter().map(|p|[(p[0]-(minx+maxx)/2.)*.75,(p[2]-meanz)*.75,(p[1]-maxy)*.75+attach]).collect();},_=>{}}
+    "strap"=>{let src=mesh.vertices.clone();let minx=src.iter().map(|p|p[0]).fold(f32::MAX,f32::min);let maxx=src.iter().map(|p|p[0]).fold(f32::MIN,f32::max);let maxy=src.iter().map(|p|p[1]).fold(f32::MIN,f32::max);let meanz=src.iter().map(|p|p[2]).sum::<f32>()/src.len() as f32;let attach=-(c.length as f32)-if c.lower_end=="pommel"{22.}else{0.};v=src.into_iter().map(|p|[(p[0]-(minx+maxx)/2.0)*0.75,(p[2]-meanz)*0.75,(p[1]-maxy)*0.75+attach]).collect();},_=>{}}
     v
 }
 
@@ -94,7 +95,7 @@ fn esc(s:&str)->String{s.replace('&',"&amp;").replace('<',"&lt;").replace('>',"&
 fn fmt(v:f32)->String{let s=format!("{v:.6}");s.trim_end_matches('0').trim_end_matches('.').to_string()}
 fn png_solid(hex:&str)->Vec<u8>{
     // 1x1 PNG; colour remains encoded in project metadata. Kept as valid thumbnail placeholder.
-    let _=hex; base64::decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=").unwrap_or_default()
+    let _=hex; STANDARD.decode("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=").unwrap_or_default()
 }
 
 #[tauri::command]
